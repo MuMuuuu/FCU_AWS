@@ -1,0 +1,37 @@
+@font-face {
+    font-family: 'consolas';
+    src: url('./font/Consolas.woff2') format('woff2'),
+        url('./font/Consolas.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+	padding-top: 10% ; 
+	font-family: consolas;
+	text-align: center;
+}
+
+.center {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.button1 {
+	/*border: 2px solid black;*/
+	width: 80%;
+	height: 13%;
+	font-size: 40px;
+	padding: 10px 20px;
+}
+
+.button2 {
+	width: 80%;
+	height: 13%;
+	font-size: 40px;
+	padding: 10px 20px;
+}
+
+
