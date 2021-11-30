@@ -9,6 +9,6 @@
 	}else
 	{
 		echo "<center><b>帳號或密碼錯誤";
-		header("refresh:3; url=store login.php");
+		header("refresh:3; url=store_login.php");
 	}
 ?>

@@ -16,7 +16,7 @@
 	?>
 	<br>
 	<table class="table" >
-			<th><font size=8px>QR*</th>
+		<th><font size=8px>QR*</th>
 		<tr><th><font size=8px>code*</th>
 	</table>	
 </body>
