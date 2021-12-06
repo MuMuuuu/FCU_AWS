@@ -10,12 +10,14 @@
 <body>
 		
 	<p><button class="refresh" onclick="window.location.reload();" >refresh</button>
-		<button class="logout" onclick="location.href='login.php'" >logout</button></p>
+	    <button class="logout" onclick="location.href='login.php'" >logout</button></p>
+
 	<?php
 		$name=$_COOKIE['name'];
 		echo "<p><b><font size=10px>".$name."</b></p>";
 	?>
-	<table  class="table1">
+	
+    <table  class="table1">
 			<td rowspan=2><center><img src="virus.png" width=100px height=100px ></td>
 			<td><font size=1><b>Covid-19 risk status</b></td>
 		<tr><td><b><font size=5>低風險*</b></td>
@@ -29,9 +31,9 @@
 		<tr><td><b><font size=1>Date,Time</b></td>
 	</table></p>
 	
-	<table class="table3">
-		<th><font size=20>QR碼</th>
-		<tr><th><font size=20>掃描</th>
+	<table style="font-size:20" class="table3">
+        <th>QR碼</th>
+        <tr><th>掃描</th>
 	</table>
 	
 </body>
