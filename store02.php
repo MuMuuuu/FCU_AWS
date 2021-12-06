@@ -8,15 +8,15 @@
 </head>
 	
 <body>
-	<p><button class="button" onclick="location.href='store01.php'" >顧客風險</button>
-	   <button class="logout" onclick="location.href='login.php'" >logout</button></p>
+    <p><button class="button" onclick="location.href='store01.php'" >顧客風險</button></p>
+    <p><button class="logout" onclick="location.href='login.php'" >logout</button></p>
 	<?php
 		$s_name=$_COOKIE['s_name'];
-		echo "<b><font size=10px>".$s_name."</b><br>";
+		echo "<b><font size=10px>" . $s_name . "</b><br>" ;
 	?>
 	<br>
-	<table class="table" >
-		<th><font size=8px>QR*</th>
-		<tr><th><font size=8px>code*</th>
+	<table style="font-size:8" class="table" >
+		<th>QR</th>
+		<tr><th>code</th> 
 	</table>	
 </body>
