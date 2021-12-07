@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import jwt
 from hashlib import sha256
 from json import loads
@@ -9,6 +10,21 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 
 app = FastAPI()
+
+origins = [
+        "http://localhost:8000",
+        "http://localhost:8080",
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:8080"
+        ]
+
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentiala=True,
+        allow_methods=["*"],
+        allow_headers=["*"]
+        )
 
 # Init Database connection and await
 class DBinit():
@@ -29,7 +45,14 @@ class DBinit():
             "password" : sha256(password.encode()).hexdigest()
             })
 
-db = DBinit("mongodb://mumu:mumu123123123@114.33.1.57:27000")
+setting = {
+        "user" : "mumu",             # Username
+        "pass" : "mumu123123123",    # Password
+        "ip" : "114.33.1.57",      # IP
+        "port" : "27000"             # Port
+        }
+
+db = DBinit("mongodb://{user}:{pass}@{ip}:{port}".format(**setting))
 
 @app.get("/login" , method=["POST"])
 def login(username:str , password:str):
