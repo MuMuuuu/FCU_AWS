@@ -53,6 +53,8 @@ class DBinit():
         user = await self.database["username"].insert_one(
                 {"username" : username , "password" : password , "locate" : None , "phone" : int}
                 )
+    
+        return user
 
 setting = {
         "user" : "mumu",
@@ -83,6 +85,19 @@ async def login(username:str , password:str):
     return jwt.encode(payload , key="FCU_AWS" , algorithm="HS256")
 
 @app.get("/register" , response_model=PostRegister)
-def register():
-    pass
+def register(data:models.PostRegister):
+    
+    try:
+        user = await db.create_user(**data)
+    except FileExistsError:
+        return HTTPException(409 , "User already exists.")
+   
+    return {
+        "status" : 200,
+        "payload" : jwt.encode({
+            "username" : user},
+            key="FCU_AWS",
+            algorithm="HS256"
+            )
+        }
 
