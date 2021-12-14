@@ -1,15 +1,18 @@
 #!/usr/bin/python3
-
+/
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import jwt
 from hashlib import sha256
-from json import loads
+import json
 from time import time 
 from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 import models
 from config import *
+import qrcode
+from io import BytesIO
+from base64 import b64encode as b64e
 
 app = FastAPI()
 
@@ -54,7 +57,7 @@ db = DBinit("mongodb://{user}:{pass}@{ip}:{port}".format(**mongo_setting))
 
 @app.post("/login" , response_model=models.ReponseLogin)
 async def login(username:str , password:str):
-    db = loads(open("db.json" , "rb").read())
+    db = json.loads(open("db.json" , "rb").read())
 
     password = sha256(password).hexdigest()
     res = await db.check_user(username , password)
@@ -81,10 +84,29 @@ def register(data:models.PostRegister):
    
     return {
         "status" : 200,
-        "payload" : jwt.encode({
-            "username" : user},
+        "payload" : jwt.encode(
+            {"username" : user},
             key=JWT_KEY,
             algorithm=JWT_ALG
             )
         }
+
+@app.get("/{store}/qrcode")
+def qrcode_gen(store:str):
+    qr = qrcode.QR(
+            border=6,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=3,
+            mask_pattern=5,
+            )
+    buffer = BytesIO()
+    
+    qr.add_data(json.dumps({"store_name" : store}))
+    qr.make(fit=True)
+    img = qr.make_image()
+    img.save(buffer)
+
+    qrbase = b64e(buffer.getvalue()).decode()    
+
+    return "data:image/png:base64,{}".format(qrbase) 
 
