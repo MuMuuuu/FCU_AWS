@@ -8,6 +8,7 @@ from json import loads
 from time import time 
 from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
+import models
 
 app = FastAPI()
 
@@ -21,7 +22,7 @@ origins = [
 app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
-        allow_credentiala=True,
+        allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"]
         )
@@ -36,37 +37,43 @@ class DBinit():
     async def init_connect(self):
         collections = await self.database.list_collections.names()
         for collect in ["users"]:
-            if collect not in colletions:
+            if collect not in collections:
                 await self.database.create_collection(collect)
 
-    async def check_user(self , username:str , password:str) -> dict:
+    async def check_user(self , username:str , password:str=None) -> dict:
         return await self.database.find_one({
             "username" : username,
             "password" : sha256(password.encode()).hexdigest()
             })
+            
+    async def create_user(self , username:str , password:str) -> bool:
+        if await self.get_user(username):
+            return FileExistsError
+
+        user = await self.database["username"].insert_one(
+                {"username" : username , "password" : password , "locate" : None , "phone" : int}
+                )
 
 setting = {
-        "user" : "mumu",             # Username
-        "pass" : "mumu123123123",    # Password
-        "ip" : "114.33.1.57",      # IP
-        "port" : "27000"             # Port
+        "user" : "mumu",
+        "pass" : "mumu123123123",
+        "ip" : "114.33.1.57",
+        "port" : "27000"
         }
 
 db = DBinit("mongodb://{user}:{pass}@{ip}:{port}".format(**setting))
 
-@app.get("/login" , method=["POST"])
-def login(username:str , password:str):
+@app.post("/login" , response_model=models.ReponseLogin)
+async def login(username:str , password:str):
     db = loads(open("db.json" , "rb").read())
-    data = request.json #TODO change into fastapi
-    username = data["username"]
-    password = sha256(data["password"]).hexdigest()
 
-    res = db.check_user(username , password)
+    password = sha256(password).hexdigest()
+    res = await db.check_user(username , password)
     if(not res):
         return False
 
     loginTime = int(time.time())
-    expiredTime = logintime + 10 * 60 # add 10 minutes 
+    expiredTime = loginTime + 10 * 60 # add 10 minutes 
     payload = ({
             "loginTime" : loginTime ,
             "expiredTime" : expiredTime ,
@@ -75,7 +82,7 @@ def login(username:str , password:str):
     
     return jwt.encode(payload , key="FCU_AWS" , algorithm="HS256")
 
-@app.get("/register" , method=["POST"])
+@app.get("/register" , response_model=PostRegister)
 def register():
     pass
 
