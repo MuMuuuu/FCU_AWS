@@ -9,15 +9,9 @@ from time import time
 from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 import models
+from config import *
 
 app = FastAPI()
-
-origins = [
-        "http://localhost:8000",
-        "http://localhost:8080",
-        "http://127.0.0.1:8000",
-        "http://127.0.0.1:8080"
-        ]
 
 app.add_middleware(
         CORSMiddleware,
@@ -56,14 +50,7 @@ class DBinit():
     
         return user
 
-setting = {
-        "user" : "mumu",
-        "pass" : "mumu123123123",
-        "ip" : "114.33.1.57",
-        "port" : "27000"
-        }
-
-db = DBinit("mongodb://{user}:{pass}@{ip}:{port}".format(**setting))
+db = DBinit("mongodb://{user}:{pass}@{ip}:{port}".format(**mongo_setting))
 
 @app.post("/login" , response_model=models.ReponseLogin)
 async def login(username:str , password:str):
@@ -82,7 +69,7 @@ async def login(username:str , password:str):
             "username" : username
             })
     
-    return jwt.encode(payload , key="FCU_AWS" , algorithm="HS256")
+    return jwt.encode(payload , key=JWT_KEY , algorithm=JWT_ALG)
 
 @app.get("/register" , response_model=PostRegister)
 def register(data:models.PostRegister):
@@ -96,8 +83,8 @@ def register(data:models.PostRegister):
         "status" : 200,
         "payload" : jwt.encode({
             "username" : user},
-            key="FCU_AWS",
-            algorithm="HS256"
+            key=JWT_KEY,
+            algorithm=JWT_ALG
             )
         }
 
