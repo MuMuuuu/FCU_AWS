@@ -17,7 +17,7 @@
 
     <script>
             let name = new URLSearchParams(window.location.search).get("names");
-            fetch(`http://localhost:9000/${name}/qrcode` ,{
+            fetch(`http://127.0.0.1:9000/${name}/qrcode` ,{
                 method: "GET",
             }).then(async res => {
                 return await res.json();
