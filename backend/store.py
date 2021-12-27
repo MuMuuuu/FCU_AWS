@@ -17,7 +17,6 @@ def qrcode_gen(store: str):
     )
     buffer = BytesIO()
     
-    link = "http://127.0.0.1/report/{store}"
     qr.add_data(json.dumps({"store_name": store}))
     qr.make(fit=True)
     img = qr.make_image()
