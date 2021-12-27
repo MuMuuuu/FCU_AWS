@@ -10,10 +10,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 import models
 from config import *
-import qrcode
-from qrcode.constants import ERROR_CORRECT_H
-from io import BytesIO
-from base64 import b64encode as b64e
 
 app = FastAPI()
 
@@ -51,6 +47,11 @@ class DBinit:
 
         return user
 
+    async def return_location(self , username):
+        return await self.database.find_one({"username" : username})
+
+    async def update_location(self , username , location):
+        await self.database.update_one({"username" : username} , {"location" : location})   
 
 db = DBinit("mongodb://{user}:{pass}@{ip}:{port}".format(**mongo_setting))
 
@@ -66,7 +67,7 @@ async def login(username: str, password: str):
 
     loginTime = int(time.time())
     expiredTime = loginTime + 10 * 60  # add 10 minutes
-    payload = {"loginTime": loginTime, "expiredTime": expiredTime, "username": username}
+    payload = {"loginTime" : loginTime , "expiredTime" : expiredTime, "username" : username}
 
     return jwt.encode(payload, key=JWT_KEY, algorithm=JWT_ALG)
 
@@ -81,23 +82,12 @@ async def register(data: models.PostRegister):
 
     return {"status": 200, "payload": jwt.encode({"username": user}, key=JWT_KEY, algorithm=JWT_ALG)}
 
+@app.get("/report/{store}" , response_model=models.ReportLocation)
+async def report(data : models.RepostLocate):
+    try:
+        result = jwt.decode(data["jwt"] , KEY=JWT_KEY , algorithm=JWT_ALG)
+    except jwt.DecodeError:
+        return HTTPException(400 , "JWT DecodeError")
 
-@app.get("/{store}/qrcode")
-def qrcode_gen(store: str):
-    qr = qrcode.QRCode(
-        border=6,
-        error_correction=ERROR_CORRECT_H,
-        box_size=3,
-        mask_pattern=5,
-    )
-    buffer = BytesIO()
-
-    qr.add_data(json.dumps({"store_name": store}))
-    qr.make(fit=True)
-    img = qr.make_image()
-    img.save(buffer)
-
-    qrbase = b64e(buffer.getvalue()).decode()
-
-    return "data:image/png;base64,{}".format(qrbase)
+    await db.update_location(result["username"] , result["location"]) 
 

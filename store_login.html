@@ -20,6 +20,9 @@
         let password = getElementByName("password");
         function Login(username , password){
             alert("A");
+            fetch("/login" , {
+                method: POST
+            })
         }
 
     </script>

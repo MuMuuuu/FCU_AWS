@@ -16,3 +16,7 @@ class PostRegister(BaseModel):
     password : str
     check_password : str
 
+class ReportLocation(BaseModel):
+    jwt : str 
+    locate : str
+
