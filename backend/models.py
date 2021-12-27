@@ -1,22 +1,23 @@
 #!/usr/bin/python3
 
+from typing import Optional, Union
 from pydantic import BaseModel
 
+
 class PostLogin(BaseModel):
-    username : str
-    password : str
+    username: str
+    password: str
+
 
 class ResponseLogin(BaseModel):
-    status : int
-    token : str=None
+    status: int
+    token: str = None
 
-class PostRegister(BaseModel):
-    phone : str
-    username : str
-    password : str
-    check_password : str
+
+class PostRegister(PostLogin):
+    phone: int
+
 
 class ReportLocation(BaseModel):
-    jwt : str 
-    locate : str
-
+    jwt:str
+    location:str

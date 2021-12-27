@@ -14,11 +14,7 @@ from config import *
 app = FastAPI()
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
+    CORSMiddleware, allow_origins=ORIGINS, allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
 )
 
 # Init Database connection and await
@@ -35,59 +31,61 @@ class DBinit:
                 await self.database.create_collection(collect)
 
     async def check_user(self, username: str, password: str = None) -> dict:
-        return await self.database.find_one({"username": username, "password": sha256(password.encode()).hexdigest()})
+        query = {"username": username}
+        if password:
+            query["password"] = sha256(password.encode()).hexdigest()
 
-    async def create_user(self, username: str, password: str) -> bool:
-        if await self.get_user(username):
+        return await self.database["users"].find_one(query)
+
+    async def create_user(self, username: str, password: str, phone: int) -> dict:
+        if await self.check_user(username):
             return FileExistsError
 
-        user = await self.database["username"].insert_one(
-            {"username": username, "password": password, "locate": None, "phone": int}
+        password_hash = sha256(password.encode()).hexdigest()
+        user = await self.database["users"].insert_one(
+            {"username": username, "password": password_hash, "phone": phone}
         )
 
         return user
 
-    async def return_location(self , username):
-        return await self.database.find_one({"username" : username})
+    async def return_location(self, username):
+        return await self.database["users"].find_one({"username": username})
 
-    async def update_location(self , username , location):
-        await self.database.update_one({"username" : username} , {"location" : location})   
+    async def update_location(self, username, location):
+        await self.database["users"].update_one({"username": username}, {"location": location})
 
-db = DBinit("mongodb://{user}:{pass}@{ip}:{port}".format(**mongo_setting))
+
+db = DBinit("mongodb://{user}:{pass}@{ip}:{port}".format(**MONGO_SETTINGS))
 
 
 @app.post("/login", response_model=models.ResponseLogin)
-async def login(username: str, password: str):
-    db = json.loads(open("db.json", "rb").read())
+async def login(data: models.PostLogin):
+    user = await db.check_user(**data.dict())
+    if not user:
+        return {"status": 404}
 
-    password = sha256(password).hexdigest()
-    res = await db.check_user(username, password)
-    if not res:
-        return False
-
-    loginTime = int(time.time())
+    loginTime = int(time())
     expiredTime = loginTime + 10 * 60  # add 10 minutes
-    payload = {"loginTime" : loginTime , "expiredTime" : expiredTime, "username" : username}
+    payload = {"loginTime": loginTime, "expiredTime": expiredTime, "username": user["username"]}
 
-    return jwt.encode(payload, key=JWT_KEY, algorithm=JWT_ALG)
+    return {"status": 200, "token": jwt.encode(payload, key=JWT_KEY, algorithm=JWT_ALG)}
 
 
-@app.get("/register", response_model=models.PostRegister)
+@app.post("/register", response_model=models.ResponseLogin)
 async def register(data: models.PostRegister):
-
     try:
-        user = await db.create_user(**data)
+        await db.create_user(**data.dict())
     except FileExistsError:
         return HTTPException(409, "User already exists.")
 
-    return {"status": 200, "payload": jwt.encode({"username": user}, key=JWT_KEY, algorithm=JWT_ALG)}
+    return {"status": 200, "payload": jwt.encode({"username": data.username}, key=JWT_KEY, algorithm=JWT_ALG)}
 
-@app.get("/report/{store}" , response_model=models.ReportLocation)
-async def report(data : models.RepostLocate):
+
+@app.get("/report/{store}", response_model=models.ReportLocation)
+async def report(data: models.ReportLocation):
     try:
-        result = jwt.decode(data["jwt"] , KEY=JWT_KEY , algorithm=JWT_ALG)
+        result = jwt.decode(data["jwt"], KEY=JWT_KEY, algorithm=JWT_ALG)
     except jwt.DecodeError:
-        return HTTPException(400 , "JWT DecodeError")
+        return HTTPException(400, "JWT DecodeError")
 
-    await db.update_location(result["username"] , result["location"]) 
-
+    await db.update_location(result["username"], result["location"])
