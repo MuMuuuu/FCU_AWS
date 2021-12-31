@@ -18,6 +18,11 @@ class PostRegister(PostLogin):
     phone: int
 
 
-class ReportLocation(BaseModel):
-    jwt:str
+class Verify(BaseModel):
+    jwt : str 
+
+
+class ReportLocation(Verify):
     location:str
+
+

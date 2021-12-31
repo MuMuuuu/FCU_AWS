@@ -10,7 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 import models
 from config import *
-from store import store
+import store
 
 app = FastAPI()
 
@@ -89,13 +89,17 @@ async def report(data: models.ReportLocation):
     try:
         result = jwt.decode(data["jwt"], KEY=JWT_KEY, algorithm=JWT_ALG)
     except jwt.DecodeError:
-        return HTTPException(400, "JWT DecodeError")
+        return HTTPException(403 , "JWT DecodeError")
 
     await db.update_location(result["username"], result["location"])
 
-@app.get("/profile")
-async def profile(username):
-    # TODO check whether is logined
-    return await db.find_one({"users" : username})
 
+@app.get("/profile" , response_model=models.Verify)
+async def profile(username):
+    try:
+        result = jwt.decode(data["jwt"], KEY=JWT_KEY, algorithm=JWT_ALG)
+    except jwt.DecodeError:
+        return HTTPException(403 , "JWT DecodeError")
+    
+    return await db.find_one({"users" : username})
 
