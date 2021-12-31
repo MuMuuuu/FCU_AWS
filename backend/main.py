@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 import jwt
 from hashlib import sha256
@@ -10,8 +10,11 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 import models
 from config import *
+from store import store
 
 app = FastAPI()
+
+app.include_router(store.router)
 
 app.add_middleware(
     CORSMiddleware, allow_origins=ORIGINS, allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
@@ -89,3 +92,10 @@ async def report(data: models.ReportLocation):
         return HTTPException(400, "JWT DecodeError")
 
     await db.update_location(result["username"], result["location"])
+
+@app.get("/profile")
+async def profile(username):
+    # TODO check whether is logined
+    return await db.find_one({"users" : username})
+
+

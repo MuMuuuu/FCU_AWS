@@ -5,9 +5,11 @@ from qrcode.constants import ERROR_CORRECT_H
 from io import BytesIO
 from base64 import b64encode as b64e
 import json
-from main import app
+from fastapi import APIRouter
 
-@app.get("/{store}/qrcode")
+router = APIRouter()
+
+@router.get("/{store}/qrcode")
 def qrcode_gen(store: str):
     qr = qrcode.QRCode(
         border=6,
