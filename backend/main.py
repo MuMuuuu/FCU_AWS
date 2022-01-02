@@ -85,7 +85,7 @@ async def register(data: models.PostRegister):
     return {"status": 200, "payload": jwt.encode({"username": data.username}, key=JWT_KEY, algorithm=JWT_ALG)}
 
 
-@app.get("/report/{store}", response_model=models.ReportLocation)
+@app.get("/report/{store}", response_model=models.ResponseLogin)
 async def report(data: models.ReportLocation):
     try:
         result = jwt.decode(data["jwt"], KEY=JWT_KEY, algorithm=JWT_ALG)
@@ -94,13 +94,15 @@ async def report(data: models.ReportLocation):
 
     await db.update_location(result["username"], result["location"])
 
+    return {"status" : 200}
 
-@app.get("/profile" , response_model=models.Verify)
-async def profile(username):
+
+@app.get("/profile" , response_model=models.ResponseProfile)
+async def profile(username : models.Verify):
     try:
         result = jwt.decode(data["jwt"], KEY=JWT_KEY, algorithm=JWT_ALG)
     except jwt.DecodeError:
         return HTTPException(403 , "JWT DecodeError")
     
-    return await db.find_one({"users" : username})
+    return await db.find_one({"users" : })
 

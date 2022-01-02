@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from typing import List
 import qrcode
 from qrcode.constants import ERROR_CORRECT_H
 from io import BytesIO
@@ -29,12 +30,12 @@ def qrcode_gen(store: str):
 
     return "data:image/png;base64,{}".format(qrbase)
 
-@router.get("/{store}/list" , response_model=models.Verify)
-async def get_list(store: str):
+@router.get("/{store}/list" , response_model=List[models.ResponseList])
+async def get_list(store: models.Verify):
     try:
         result = jwt.decode(store , key=JWT_KEY , algorithm=JWT_ALG)
     except JwtDecodeError:
         return HTTPException("403" , "JWT DecodeError")
-    
-    return await self.find_one({"location" : store})
+
+    return await self.find({"location" : store})
 

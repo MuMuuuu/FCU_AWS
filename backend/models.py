@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from typing import Optional, Union
+from typing import Optional, Union, List
 from pydantic import BaseModel
 
 class PostLogin(BaseModel):
@@ -14,7 +14,7 @@ class ResponseLogin(BaseModel):
 
 
 class PostRegister(PostLogin):
-    phone: int
+    phone: str
 
 
 class Verify(BaseModel):
@@ -23,4 +23,14 @@ class Verify(BaseModel):
 
 class ReportLocation(Verify):
     location:str
+
+
+class ResponseProfile(PostLogin):
+    location: str
+    phone : str
+
+
+class ResponseList(BaseModel):
+    uesrname : str
+
 
