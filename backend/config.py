@@ -1,7 +1,6 @@
 import jwt
 
 MONGODB_DATABASE = "FCU_AWS"
-JWT_SECRET = "mumu"
 JWT_KEY = "FCU_AWS"
 JWT_ALG = "HS256"
 

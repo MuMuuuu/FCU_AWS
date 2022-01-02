@@ -6,13 +6,17 @@ from qrcode.constants import ERROR_CORRECT_H
 from io import BytesIO
 from base64 import b64encode as b64e
 import json
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Path
+from auth import LoginState
 import models
+import auth
+from main import db
 
-router = APIRouter()
+router = APIRouter(prefix="/store")
+
 
 @router.get("/{store}/qrcode")
-def qrcode_gen(store: str):
+def get_store_qrcode(store: str = Path(...)):
     qr = qrcode.QRCode(
         border=6,
         error_correction=ERROR_CORRECT_H,
@@ -20,8 +24,8 @@ def qrcode_gen(store: str):
         mask_pattern=5,
     )
     buffer = BytesIO()
-    
-    qr.add_data(json.dumps({"store_name": store}))
+
+    qr.add_data(json.dumps({"store": store}))
     qr.make(fit=True)
     img = qr.make_image()
     img.save(buffer)
@@ -30,12 +34,14 @@ def qrcode_gen(store: str):
 
     return "data:image/png;base64,{}".format(qrbase)
 
-@router.get("/{store}/list" , response_model=List[models.ResponseList])
-async def get_list(store: models.Verify):
-    try:
-        result = jwt.decode(store , key=JWT_KEY , algorithm=JWT_ALG)
-    except JwtDecodeError:
-        return HTTPException("403" , "JWT DecodeError")
 
-    return await self.find({"location" : store})
+@router.get("/{store}/history", response_model=List[models.StoreLocation])
+async def get_store_history(store: str = Path(...), login_state: LoginState = Depends(auth.get_login_state)):
+    return await db.get_store_locations(store)
 
+
+@router.post("/{store}/report", response_model=models.BasicResponse)
+async def post_store_report(store: str = Path(...),login_state: LoginState = Depends(auth.get_login_state)):
+    await db.update_user_location(login_state.username, store)
+
+    return {"status": 200}

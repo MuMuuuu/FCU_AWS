@@ -3,34 +3,38 @@
 from typing import Optional, Union, List
 from pydantic import BaseModel
 
+class BasicResponse(BaseModel):
+    status: int
+
 class PostLogin(BaseModel):
     username: str
     password: str
 
-
-class ResponseLogin(BaseModel):
-    status: int
+class ResponseLogin(BasicResponse):
     token: str = None
 
 
 class PostRegister(PostLogin):
-    phone: str
+    phone: int
 
 
-class Verify(BaseModel):
-    jwt : str 
+class PostLocation(BaseModel):
+    store: str
 
 
-class ReportLocation(Verify):
-    location:str
+class Location(BaseModel):
+    store: str
+    timestamp: int
 
 
-class ResponseProfile(PostLogin):
-    location: str
-    phone : str
+class StoreLocation(Location):
+    username: str
 
 
-class ResponseList(BaseModel):
-    uesrname : str
+class ResponseProfile(BaseModel):
+    username: str
+    locations: List[Location] = []
 
 
+class ResponseStoreHistory(BaseModel):
+    locations: List[StoreLocation] = []
