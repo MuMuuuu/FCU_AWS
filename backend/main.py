@@ -10,15 +10,16 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
 import models
 from config import *
-import store
+from store import store
 
 app = FastAPI()
 
 app.include_router(store.router)
 
 app.add_middleware(
-    CORSMiddleware, allow_origins=ORIGINS, allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
+    CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
 )
+
 
 # Init Database connection and await
 class DBinit:

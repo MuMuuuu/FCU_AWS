@@ -3,7 +3,6 @@
 from typing import Optional, Union
 from pydantic import BaseModel
 
-
 class PostLogin(BaseModel):
     username: str
     password: str
@@ -24,5 +23,4 @@ class Verify(BaseModel):
 
 class ReportLocation(Verify):
     location:str
-
 
