@@ -20,13 +20,14 @@ export default function Profile() {
           },
         })
         .then(res => {
-          setData(res.data);
+          const locations = res.data.locations?.sort((a, b) => b.timestamp - a.timestamp);
+          setData({ username: res.data.username, locations });
         });
     }
   }, [navigate, tokenManager.token]);
 
   return (
-    <Container mt="30vh">
+    <Container my="10vh">
       <Box bg="gray.900" p={10} borderRadius="3xl">
         <Text fontSize="4xl" mb={2}>
           {data.username} 的個人檔案

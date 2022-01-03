@@ -12,6 +12,11 @@ export default function Index() {
       <Stack mt="62px">
         {tokenManager.token && tokenManager.userType === "user" && (
           <>
+            <Link to="/scan">
+              <Button colorScheme="blue" size="lg" w="256px">
+                掃描
+              </Button>
+            </Link>
             <Link to="/profile">
               <Button colorScheme="blue" size="lg" w="256px">
                 個人檔案
@@ -19,7 +24,7 @@ export default function Index() {
             </Link>
           </>
         )}
-        
+
         {tokenManager.token && tokenManager.userType === "store" && (
           <>
             <Link to="/store/qrcode">
@@ -47,8 +52,6 @@ export default function Index() {
           </Link>
         )}
       </Stack>
-      <Text>LoginState: {tokenManager.token || "Not login"}</Text>
-      <Text>UserType: {tokenManager.userType}</Text>
     </Container>
   );
 }

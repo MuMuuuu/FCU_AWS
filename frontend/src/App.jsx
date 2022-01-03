@@ -7,6 +7,7 @@ import Profile from "./Views/Profile";
 import Register from "./Views/Register";
 import History from "./Views/Store/History";
 import QRcode from "./Views/Store/QRcode";
+import Scan from "./Views/Scan";
 
 export const TokenContext = createContext();
 
@@ -57,6 +58,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/scan" element={<Scan />} />
             <Route path="/store" element={<StoreWrapper />}>
               <Route path="history" element={<History />} />
               <Route path="qrcode" element={<QRcode />} />
