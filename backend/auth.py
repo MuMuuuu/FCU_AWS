@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt

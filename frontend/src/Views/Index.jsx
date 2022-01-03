@@ -52,6 +52,10 @@ export default function Index() {
           </Link>
         )}
       </Stack>
+<<<<<<< Updated upstream
+=======
+      <Text>LoginState: {"Loggin-ed" || "Not login"}</Text>
+>>>>>>> Stashed changes
     </Container>
   );
 }
