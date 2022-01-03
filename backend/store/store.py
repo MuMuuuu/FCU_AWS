@@ -18,9 +18,9 @@ router = APIRouter(prefix="/store")
 @router.get("/{store}/qrcode")
 def get_store_qrcode(store: str = Path(...)):
     qr = qrcode.QRCode(
-        border=6,
+        border=1,
         error_correction=ERROR_CORRECT_H,
-        box_size=3,
+        box_size=10,
         mask_pattern=5,
     )
     buffer = BytesIO()
@@ -41,7 +41,7 @@ async def get_store_history(store: str = Path(...), login_state: LoginState = De
 
 
 @router.post("/{store}/report", response_model=models.BasicResponse)
-async def post_store_report(store: str = Path(...),login_state: LoginState = Depends(auth.get_login_state)):
+async def post_store_report(store: str = Path(...), login_state: LoginState = Depends(auth.get_login_state)):
     await db.update_user_location(login_state.username, store)
 
     return {"status": 200}
