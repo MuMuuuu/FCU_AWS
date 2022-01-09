@@ -15,7 +15,7 @@ export default function History() {
         },
       })
       .then(res => {
-        const locations = res.data.locations?.sort((a, b) => b.timestamp - a.timestamp);
+        const locations = res.data?.sort((a, b) => b.timestamp - a.timestamp);
         setData(locations);
       });
   }, [tokenManager.token, tokenManager.username]);

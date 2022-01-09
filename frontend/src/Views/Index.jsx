@@ -52,10 +52,7 @@ export default function Index() {
           </Link>
         )}
       </Stack>
-<<<<<<< Updated upstream
-=======
-      <Text>LoginState: {"Loggin-ed" || "Not login"}</Text>
->>>>>>> Stashed changes
+      <Text>LoginState: {tokenManager.token ? "Loggin-ed" : "Not login"}</Text>
     </Container>
   );
 }
