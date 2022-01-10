@@ -59,4 +59,9 @@
 - Return - True : status 200
 - Return - False : Exception(403 , JWTDecodeError)
 
+## Auth
+### parse_token
+- Description : Check jwt token for login
 
+### get_login_state
+- Descriptino : Return loginstate for React.Index.jsx 
