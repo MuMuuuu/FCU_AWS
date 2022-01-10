@@ -1,5 +1,21 @@
 # API List
 
+## Database (class)
+### init_connect
+- Description : Connect to specific MongoDB
+
+### get_user
+- Description : Find user
+
+### create_user
+- Description : Create user in MongoDB for /register
+
+### update_user_location
+- Description : Update user's location for /{store}/report
+
+### get_store_locations
+- Description : List all locations for /profile
+
 ## Main
 ### Login
 - Path : /login
@@ -15,13 +31,6 @@
 - Return - True : status 200 , jwt token
 - Return - False : Exception(409 , User already exists)
 
-### Update Location
-- Path : /report/{store}/
-- Description : Update user's location by scanning QRCode
-- Input : jwt , location
-- Return - True : status 200
-- Return - False : Exception(403 , JWTDecodeError)
-
 ### Profile
 - Path : /profile
 - Description : List account data
@@ -29,6 +38,7 @@
 - Return - True : username , password , location , phone
 - Return - False : Exception(403 , JWTDecodeError)
 
+## Store
 ### QRCode Generator
 - Path : /{store}/qrcode
 - Description : Generate QRCode for user to scan
@@ -36,8 +46,17 @@
 - Return : base64(QRCode) 
 
 ### Visitors List
-- Path : /{store}/list
+- Path : /{store}/history
 - Description : List all visitors
 - Input : jwt
 - Return - True : List([username])
 - Return - False : Exception(403 , JWTDecodeError)
+
+### Update Location
+- Path : /{store}/report
+- Description : Update user's location by scanning QRCode
+- Input : jwt , location
+- Return - True : status 200
+- Return - False : Exception(403 , JWTDecodeError)
+
+
