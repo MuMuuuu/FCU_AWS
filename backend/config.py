@@ -6,8 +6,8 @@ JWT_ALG = "HS256"
 
 MONGO_SETTINGS = {
         "user" : "mumu",
-        "pass" : "mumu123123123",
-        "ip" : "114.33.1.57",
+        "pass" : "",
+        "ip" : "",
         "port" : "27000"
         }
 
